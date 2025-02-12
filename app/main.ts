@@ -13,6 +13,13 @@ function matchPattern(inputLine: string, pattern: string): boolean {
       }
     }
     return false;
+  } else if (pattern === '\\w') {
+    for (const char of inputLine) {
+      if (char.toLowerCase() !== char.toUpperCase()) {
+        return true;
+      }
+    }
+    return false;
   }
   else {
     throw new Error(`Unhandled pattern: ${pattern}`);
