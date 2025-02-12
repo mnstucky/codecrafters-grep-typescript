@@ -20,6 +20,15 @@ function matchPattern(inputLine: string, pattern: string): boolean {
       }
     }
     return false;
+  } else if (pattern.startsWith('[') &&
+    pattern.endsWith(']')) {
+    const charactersToMatch = pattern.substring(1, pattern.length - 1);
+    for (const char of inputLine) {
+      if (charactersToMatch.includes(char)) {
+        return true;
+      }
+    }
+    return false;
   }
   else {
     throw new Error(`Unhandled pattern: ${pattern}`);
