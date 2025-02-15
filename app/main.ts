@@ -3,7 +3,7 @@ const pattern = args[3];
 
 const inputLine: string = await Bun.stdin.text();
 
-function matchPattern(inputLine: string, pattern: string): boolean {
+function matchAtPosition(inputChar: string, pattern: string): boolean {
   if (pattern.length === 1) {
     return inputLine.includes(pattern);
   } else if (pattern === '\\d') {
@@ -42,6 +42,24 @@ function matchPattern(inputLine: string, pattern: string): boolean {
   else {
     throw new Error(`Unhandled pattern: ${pattern}`);
   }
+}
+
+function matchPattern(inputLine: string, pattern: string): boolean {
+  let patternPos = 0;
+  for (const inputChar of inputLine) {
+    let patternToMatch = pattern[patternPos];
+    if (pattern[patternPos] === '\\') {
+      patternToMatch = pattern.substring(patternPos, patternPos + 2);
+    }
+    else if (pattern[patternPos] === '[') {
+      const endOfGroup = pattern.substring(patternPos).indexOf(']');
+      patternToMatch = pattern.substring(patternPos, endOfGroup + 1);
+    }
+    if (!matchAtPosition(inputChar, patternToMatch))
+      return false;
+    patternPos += patternToMatch.length;
+  }
+  return true;
 }
 
 if (args[2] !== "-E") {
