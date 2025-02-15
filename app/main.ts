@@ -4,7 +4,10 @@ const pattern = args[3];
 const inputLine: string = await Bun.stdin.text();
 
 function matchAtPosition(inputChar: string, pattern: string): boolean {
-  if (pattern.length === 1) {
+  if (pattern === undefined) {
+    return true;
+  }
+  else if (pattern.length === 1) {
     return inputLine.includes(pattern);
   } else if (pattern === '\\d') {
     for (const char of inputLine) {
