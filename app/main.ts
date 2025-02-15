@@ -39,8 +39,7 @@ function matchPattern(inputLine: string, pattern: string): boolean {
       const endOfGroup = pattern.substring(patternPos).indexOf(']');
       patternToMatch = pattern.substring(patternPos, endOfGroup + 1);
     }
-    if (matchAtPosition(inputChar, patternToMatch))
-      result = true;
+    result = matchAtPosition(inputChar, patternToMatch);
     patternPos += patternToMatch.length;
   }
   return result;
