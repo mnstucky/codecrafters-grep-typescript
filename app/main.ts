@@ -29,6 +29,7 @@ function matchAtPosition(inputChar: string, pattern: string): boolean {
 
 function matchPattern(inputLine: string, pattern: string): boolean {
   let patternPos = 0;
+  let result = false;
   for (const inputChar of inputLine) {
     let patternToMatch = pattern[patternPos] ?? '';
     if (pattern[patternPos] === '\\') {
@@ -38,11 +39,11 @@ function matchPattern(inputLine: string, pattern: string): boolean {
       const endOfGroup = pattern.substring(patternPos).indexOf(']');
       patternToMatch = pattern.substring(patternPos, endOfGroup + 1);
     }
-    if (!matchAtPosition(inputChar, patternToMatch))
-      return false;
+    if (matchAtPosition(inputChar, patternToMatch))
+      result = true;
     patternPos += patternToMatch.length;
   }
-  return true;
+  return result;
 }
 
 if (args[2] !== "-E") {
