@@ -4,43 +4,23 @@ const pattern = args[3];
 const inputLine: string = await Bun.stdin.text();
 
 function matchAtPosition(inputChar: string, pattern: string): boolean {
-  if (pattern === undefined) {
+  if (pattern === '' || pattern === undefined) {
     return true;
   }
   else if (pattern.length === 1) {
-    return inputLine.includes(pattern);
+    return inputChar === pattern;
   } else if (pattern === '\\d') {
-    for (const char of inputLine) {
-      if (char >= '0' && char <= '9') {
-        return true;
-      }
-    }
-    return false;
+    return (inputChar >= '0' && inputChar <= '9')
   } else if (pattern === '\\w') {
-    for (const char of inputLine) {
-      if (char.toLowerCase() !== char.toUpperCase()) {
-        return true;
-      }
-    }
-    return false;
+    return inputChar.toLowerCase() !== inputChar.toUpperCase();
   } else if (pattern.startsWith('[^') &&
     pattern.endsWith(']')) {
     const charactersToNotMatch = pattern.substring(2, pattern.length - 1);
-    for (const char of inputLine) {
-      if (charactersToNotMatch.includes(char)) {
-        return false;
-      }
-    }
-    return true;
+    return charactersToNotMatch.includes(inputChar);
   } else if (pattern.startsWith('[') &&
     pattern.endsWith(']')) {
     const charactersToMatch = pattern.substring(1, pattern.length - 1);
-    for (const char of inputLine) {
-      if (charactersToMatch.includes(char)) {
-        return true;
-      }
-    }
-    return false;
+    return charactersToMatch.includes(inputChar);
   }
   else {
     throw new Error(`Unhandled pattern: ${pattern}`);
@@ -50,7 +30,7 @@ function matchAtPosition(inputChar: string, pattern: string): boolean {
 function matchPattern(inputLine: string, pattern: string): boolean {
   let patternPos = 0;
   for (const inputChar of inputLine) {
-    let patternToMatch = pattern[patternPos];
+    let patternToMatch = pattern[patternPos] ?? '';
     if (pattern[patternPos] === '\\') {
       patternToMatch = pattern.substring(patternPos, patternPos + 2);
     }
