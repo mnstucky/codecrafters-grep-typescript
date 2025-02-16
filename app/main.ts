@@ -30,9 +30,13 @@ function matchAtPosition(inputChar: string, pattern: string): boolean {
 function matchPattern(inputLine: string, pattern: string): boolean {
   let patternPos = 0;
   let match = false;
+  let startOfLine = false;
   for (const inputChar of inputLine) {
     let patternToMatch = pattern[patternPos] ?? '';
-    if (patternToMatch === '\\') {
+    if (patternToMatch === '^') {
+      startOfLine = true;
+    }
+    else if (patternToMatch === '\\') {
       patternToMatch = pattern.substring(patternPos, patternPos + 2);
     }
     else if (patternToMatch === '[') {
@@ -40,6 +44,9 @@ function matchPattern(inputLine: string, pattern: string): boolean {
       patternToMatch = pattern.substring(patternPos, endOfGroup + 1);
     }
     match = matchAtPosition(inputChar, patternToMatch);
+    if (startOfLine && !match) {
+      return false;
+    }
     if (match) {
       patternPos += patternToMatch.length;
     }
