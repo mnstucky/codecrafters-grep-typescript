@@ -1,7 +1,7 @@
 const args = process.argv;
 const pattern = args[3];
 
-const testResult = matchPattern('log', '^log');
+const testResult = matchPattern('cat', 'cat$');
 const inputLine: string = await Bun.stdin.text();
 
 function matchAtPosition(inputChar: string, pattern: string): boolean {
@@ -53,7 +53,7 @@ function matchPattern(inputLine: string, pattern: string): boolean {
       patternPos += patternToMatch.length;
     }
   }
-  if (patternPos < pattern.length) {
+  if (patternPos < (endOfLine ? pattern.length + 1 : pattern.length)) {
     return false;
   }
   return match;
