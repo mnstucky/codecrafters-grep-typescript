@@ -7,8 +7,7 @@ const inputLine: string = await Bun.stdin.text();
 function matchAtPosition(inputChar: string, pattern: string): boolean {
   if (pattern === '' || pattern === undefined) {
     return true;
-  }
-  else if (pattern.length === 1) {
+  } else if (pattern.length === 1) {
     return pattern === '.' || inputChar === pattern;
   } else if (pattern === '\\d') {
     return (inputChar >= '0' && inputChar <= '9')
@@ -22,8 +21,7 @@ function matchAtPosition(inputChar: string, pattern: string): boolean {
     pattern.endsWith(']')) {
     const charactersToMatch = pattern.substring(1, pattern.length - 1);
     return charactersToMatch.includes(inputChar);
-  }
-  else {
+  } else {
     throw new Error(`Unhandled pattern: ${pattern}`);
   }
 }
@@ -59,33 +57,32 @@ function matchPattern(inputLine: string, pattern: string): boolean {
   const endOfLine = pattern.endsWith('$');
   let extraPatternCharacters = endOfLine ? 1 : 0;
   let oneOrMore = '';
-  let zeroOrMore = '';
   let patternPos = startOfLine ? 1 : 0;
-  let match = false;
+  let matchAtPos = false;
   for (let inputPos = 0; inputPos < inputLine.length; inputPos++) {
     const patternToMatch = getPatternToMatch(pattern, patternPos);
-    zeroOrMore = getZeroOrMore(pattern, patternPos, patternToMatch);
-    match = matchAtPosition(inputLine[inputPos], patternToMatch);
-    if (!match && (oneOrMore || zeroOrMore)) {
+    const zeroOrMore = getZeroOrMore(pattern, patternPos, patternToMatch);
+    matchAtPos = matchAtPosition(inputLine[inputPos], patternToMatch);
+    if (!matchAtPos && (oneOrMore || zeroOrMore)) {
       inputPos -= 1;
       patternPos += 2;
       extraPatternCharacters += 1;
     }
-    if (startOfLine && !match) {
+    if (startOfLine && !matchAtPos) {
       return false;
     }
-    if (endOfLine && !match && inputPos === inputLine.length - 1) {
+    if (endOfLine && !matchAtPos && inputPos === inputLine.length - 1) {
       return false;
     }
     oneOrMore = getOneOrMore(pattern, patternPos, patternToMatch);
-    if (match && !oneOrMore && !zeroOrMore) {
+    if (matchAtPos && !oneOrMore && !zeroOrMore) {
       patternPos += patternToMatch.length;
     }
   }
   if (patternPos < pattern.length - extraPatternCharacters) {
     return false;
   }
-  return match;
+  return matchAtPos;
 }
 
 if (args[2] !== "-E") {
