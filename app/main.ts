@@ -53,7 +53,7 @@ function matchPattern(inputLine: string, pattern: string): boolean {
       patternPos += patternToMatch.length;
     }
   }
-  if (patternPos < (endOfLine ? pattern.length + 1 : pattern.length)) {
+  if (patternPos < (endOfLine ? pattern.length - 1 : pattern.length)) {
     return false;
   }
   return match;
