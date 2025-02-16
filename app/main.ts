@@ -9,7 +9,7 @@ function matchAtPosition(inputChar: string, pattern: string): boolean {
     return true;
   }
   else if (pattern.length === 1) {
-    return inputChar === pattern;
+    return pattern === '.' || inputChar === pattern;
   } else if (pattern === '\\d') {
     return (inputChar >= '0' && inputChar <= '9')
   } else if (pattern === '\\w') {
