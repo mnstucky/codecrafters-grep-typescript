@@ -81,9 +81,6 @@ function matchPattern(inputLine: string, pattern: string): boolean {
   }
   if (patternPos < pattern.length - extraPatternCharacters) {
     if (oneOrMore === '.') {
-      while (pattern[patternPos] !== '+') {
-        patternPos -= 1;
-      }
     }
     return false;
   }
