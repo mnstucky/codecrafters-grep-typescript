@@ -1,7 +1,7 @@
 const args = process.argv;
 const pattern = args[3];
 
-const testResult = matchPattern('cat', 'cat$');
+const testResult = matchPattern('caat', 'ca+t');
 const inputLine: string = await Bun.stdin.text();
 
 function matchAtPosition(inputChar: string, pattern: string): boolean {
@@ -31,6 +31,7 @@ function matchAtPosition(inputChar: string, pattern: string): boolean {
 function matchPattern(inputLine: string, pattern: string): boolean {
   const startOfLine = pattern.startsWith('^');
   const endOfLine = pattern.endsWith('$');
+  let oneOrMore = '';
   let patternPos = startOfLine ? 1 : 0;
   let match = false;
   for (let inputPos = 0; inputPos < inputLine.length; inputPos++) {
@@ -42,14 +43,21 @@ function matchPattern(inputLine: string, pattern: string): boolean {
       const endOfGroup = pattern.substring(patternPos).indexOf(']');
       patternToMatch = pattern.substring(patternPos, endOfGroup + 1);
     }
+    if (pattern.length > patternPos + 1 && pattern[patternPos + 1] === '+') {
+      oneOrMore = patternToMatch;
+    }
     match = matchAtPosition(inputLine[inputPos], patternToMatch);
+    if (!match && oneOrMore) {
+      inputPos -= 1;
+      patternPos += 2;
+    }
     if (startOfLine && !match) {
       return false;
     }
     if (endOfLine && !match && inputPos === inputLine.length - 1) {
       return false;
     }
-    if (match) {
+    if (match && !oneOrMore) {
       patternPos += patternToMatch.length;
     }
   }
