@@ -33,6 +33,7 @@ function matchPattern(inputLine: string, pattern: string): boolean {
   const endOfLine = pattern.endsWith('$');
   let extraPatternCharacters = endOfLine ? 1 : 0;
   let oneOrMore = '';
+  let zeroOrMore = '';
   let patternPos = startOfLine ? 1 : 0;
   let match = false;
   for (let inputPos = 0; inputPos < inputLine.length; inputPos++) {
@@ -44,8 +45,11 @@ function matchPattern(inputLine: string, pattern: string): boolean {
       const endOfGroup = pattern.substring(patternPos).indexOf(']');
       patternToMatch = pattern.substring(patternPos, endOfGroup + 1);
     }
+    if (pattern.length > patternPos + 1 && pattern[patternPos + 1] === '?') {
+      zeroOrMore = patternToMatch;
+    }
     match = matchAtPosition(inputLine[inputPos], patternToMatch);
-    if (!match && oneOrMore) {
+    if (!match && (oneOrMore || zeroOrMore)) {
       inputPos -= 1;
       patternPos += 2;
       extraPatternCharacters += 1;
@@ -59,7 +63,7 @@ function matchPattern(inputLine: string, pattern: string): boolean {
     if (pattern.length > patternPos + 1 && pattern[patternPos + 1] === '+') {
       oneOrMore = patternToMatch;
     }
-    if (match && !oneOrMore) {
+    if (match && !oneOrMore && !zeroOrMore) {
       patternPos += patternToMatch.length;
     }
   }
