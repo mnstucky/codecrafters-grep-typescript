@@ -1,6 +1,8 @@
 const args = process.argv;
 const pattern = args[3];
 
+const result = matchPattern('sally has 1 orange', '\\d apple');
+
 const inputLine: string = await Bun.stdin.text();
 
 function matchAtPosition(inputChar: string, pattern: string): boolean {
@@ -40,7 +42,9 @@ function matchPattern(inputLine: string, pattern: string): boolean {
       patternToMatch = pattern.substring(patternPos, endOfGroup + 1);
     }
     result = matchAtPosition(inputChar, patternToMatch);
-    patternPos += patternToMatch.length;
+    if (result) {
+      patternPos += patternToMatch.length;
+    }
   }
   return result;
 }
