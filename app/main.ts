@@ -40,6 +40,20 @@ function getPatternToMatch(pattern: string, patternPos: number) {
   return patternToMatch;
 }
 
+function getZeroOrMore(pattern: string, patternPos: number, patternToMatch: string) {
+  if (pattern.length > patternPos + 1 && pattern[patternPos + 1] === '?') {
+    return patternToMatch;
+  }
+  return '';
+}
+
+function getOneOrMore(pattern: string, patternPos: number, patternToMatch: string) {
+  if (pattern.length > patternPos + 1 && pattern[patternPos + 1] === '+') {
+    return patternToMatch;
+  }
+  return '';
+}
+
 function matchPattern(inputLine: string, pattern: string): boolean {
   const startOfLine = pattern.startsWith('^');
   const endOfLine = pattern.endsWith('$');
@@ -50,10 +64,7 @@ function matchPattern(inputLine: string, pattern: string): boolean {
   let match = false;
   for (let inputPos = 0; inputPos < inputLine.length; inputPos++) {
     const patternToMatch = getPatternToMatch(pattern, patternPos);
-    zeroOrMore = '';
-    if (pattern.length > patternPos + 1 && pattern[patternPos + 1] === '?') {
-      zeroOrMore = patternToMatch;
-    }
+    zeroOrMore = getZeroOrMore(pattern, patternPos, patternToMatch);
     match = matchAtPosition(inputLine[inputPos], patternToMatch);
     if (!match && (oneOrMore || zeroOrMore)) {
       inputPos -= 1;
@@ -66,9 +77,7 @@ function matchPattern(inputLine: string, pattern: string): boolean {
     if (endOfLine && !match && inputPos === inputLine.length - 1) {
       return false;
     }
-    if (pattern.length > patternPos + 1 && pattern[patternPos + 1] === '+') {
-      oneOrMore = patternToMatch;
-    }
+    oneOrMore = getOneOrMore(pattern, patternPos, patternToMatch);
     if (match && !oneOrMore && !zeroOrMore) {
       patternPos += patternToMatch.length;
     }
