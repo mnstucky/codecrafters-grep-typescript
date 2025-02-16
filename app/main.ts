@@ -38,15 +38,8 @@ function getPatternToMatch(pattern: string, patternPos: number) {
   return patternToMatch;
 }
 
-function getZeroOrMore(pattern: string, patternPos: number, patternToMatch: string) {
-  if (pattern.length > patternPos + 1 && pattern[patternPos + 1] === '?') {
-    return patternToMatch;
-  }
-  return '';
-}
-
-function getOneOrMore(pattern: string, patternPos: number, patternToMatch: string) {
-  if (pattern.length > patternPos + 1 && pattern[patternPos + 1] === '+') {
+function getXOrMore(pattern: string, patternPos: number, patternToMatch: string, operator: string) {
+  if (pattern.length > patternPos + 1 && pattern[patternPos + 1] === operator) {
     return patternToMatch;
   }
   return '';
@@ -61,7 +54,7 @@ function matchPattern(inputLine: string, pattern: string): boolean {
   let matchAtPos = false;
   for (let inputPos = 0; inputPos < inputLine.length; inputPos++) {
     const patternToMatch = getPatternToMatch(pattern, patternPos);
-    const zeroOrMore = getZeroOrMore(pattern, patternPos, patternToMatch);
+    const zeroOrMore = getXOrMore(pattern, patternPos, patternToMatch, '?');
     matchAtPos = matchAtPosition(inputLine[inputPos], patternToMatch);
     if (!matchAtPos && (oneOrMore || zeroOrMore)) {
       inputPos -= 1;
@@ -74,14 +67,12 @@ function matchPattern(inputLine: string, pattern: string): boolean {
     if (endOfLine && !matchAtPos && inputPos === inputLine.length - 1) {
       return false;
     }
-    oneOrMore = getOneOrMore(pattern, patternPos, patternToMatch);
+    oneOrMore = getXOrMore(pattern, patternPos, patternToMatch, '+');
     if (matchAtPos && !oneOrMore && !zeroOrMore) {
       patternPos += patternToMatch.length;
     }
   }
   if (patternPos < pattern.length - extraPatternCharacters) {
-    if (oneOrMore === '.') {
-    }
     return false;
   }
   return matchAtPos;
