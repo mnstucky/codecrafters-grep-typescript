@@ -1,7 +1,7 @@
 const args = process.argv;
 const pattern = args[3];
 
-const testResult = matchPattern('act', 'ca+t');
+const testResult = matchPattern('google', 'g.+gle');
 const inputLine: string = await Bun.stdin.text();
 
 function matchAtPosition(inputChar: string, pattern: string): boolean {
@@ -28,6 +28,18 @@ function matchAtPosition(inputChar: string, pattern: string): boolean {
   }
 }
 
+function getPatternToMatch(pattern: string, patternPos: number) {
+  let patternToMatch = pattern[patternPos] ?? '';
+  if (patternToMatch === '\\') {
+    patternToMatch = pattern.substring(patternPos, patternPos + 2);
+  }
+  else if (patternToMatch === '[') {
+    const endOfGroup = pattern.substring(patternPos).indexOf(']');
+    patternToMatch = pattern.substring(patternPos, endOfGroup + 1);
+  }
+  return patternToMatch;
+}
+
 function matchPattern(inputLine: string, pattern: string): boolean {
   const startOfLine = pattern.startsWith('^');
   const endOfLine = pattern.endsWith('$');
@@ -37,19 +49,10 @@ function matchPattern(inputLine: string, pattern: string): boolean {
   let patternPos = startOfLine ? 1 : 0;
   let match = false;
   for (let inputPos = 0; inputPos < inputLine.length; inputPos++) {
-    let patternToMatch = pattern[patternPos] ?? '';
-    if (patternToMatch === '\\') {
-      patternToMatch = pattern.substring(patternPos, patternPos + 2);
-    }
-    else if (patternToMatch === '[') {
-      const endOfGroup = pattern.substring(patternPos).indexOf(']');
-      patternToMatch = pattern.substring(patternPos, endOfGroup + 1);
-    }
+    const patternToMatch = getPatternToMatch(pattern, patternPos);
+    zeroOrMore = '';
     if (pattern.length > patternPos + 1 && pattern[patternPos + 1] === '?') {
       zeroOrMore = patternToMatch;
-    }
-    else {
-      zeroOrMore = '';
     }
     match = matchAtPosition(inputLine[inputPos], patternToMatch);
     if (!match && (oneOrMore || zeroOrMore)) {
