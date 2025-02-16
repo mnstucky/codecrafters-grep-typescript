@@ -35,6 +35,7 @@ function matchPattern(inputLine: string, pattern: string): boolean {
     let patternToMatch = pattern[patternPos] ?? '';
     if (patternToMatch === '^') {
       startOfLine = true;
+      continue;
     }
     else if (patternToMatch === '\\') {
       patternToMatch = pattern.substring(patternPos, patternPos + 2);
