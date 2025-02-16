@@ -16,7 +16,7 @@ function matchAtPosition(inputChar: string, pattern: string): boolean {
   } else if (pattern.startsWith('[^') &&
     pattern.endsWith(']')) {
     const charactersToNotMatch = pattern.substring(2, pattern.length - 1);
-    return charactersToNotMatch.includes(inputChar);
+    return !charactersToNotMatch.includes(inputChar);
   } else if (pattern.startsWith('[') &&
     pattern.endsWith(']')) {
     const charactersToMatch = pattern.substring(1, pattern.length - 1);
