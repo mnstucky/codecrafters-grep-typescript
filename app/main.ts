@@ -32,10 +32,10 @@ function matchPattern(inputLine: string, pattern: string): boolean {
   let match = false;
   for (const inputChar of inputLine) {
     let patternToMatch = pattern[patternPos] ?? '';
-    if (pattern[patternPos] === '\\') {
+    if (patternToMatch === '\\') {
       patternToMatch = pattern.substring(patternPos, patternPos + 2);
     }
-    else if (pattern[patternPos] === '[') {
+    else if (patternToMatch === '[') {
       const endOfGroup = pattern.substring(patternPos).indexOf(']');
       patternToMatch = pattern.substring(patternPos, endOfGroup + 1);
     }
@@ -44,7 +44,7 @@ function matchPattern(inputLine: string, pattern: string): boolean {
       patternPos += patternToMatch.length;
     }
   }
-  if (patternPos < pattern.length - 1) {
+  if (patternPos < pattern.length) {
     return false;
   }
   return match;
