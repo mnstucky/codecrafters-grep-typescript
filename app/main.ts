@@ -48,6 +48,9 @@ function matchPattern(inputLine: string, pattern: string): boolean {
     if (pattern.length > patternPos + 1 && pattern[patternPos + 1] === '?') {
       zeroOrMore = patternToMatch;
     }
+    else {
+      zeroOrMore = '';
+    }
     match = matchAtPosition(inputLine[inputPos], patternToMatch);
     if (!match && (oneOrMore || zeroOrMore)) {
       inputPos -= 1;
