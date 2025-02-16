@@ -1,6 +1,7 @@
 const args = process.argv;
 const pattern = args[3];
 
+const testResult = matchPattern('log', '^log');
 const inputLine: string = await Bun.stdin.text();
 
 function matchAtPosition(inputChar: string, pattern: string): boolean {
@@ -28,16 +29,12 @@ function matchAtPosition(inputChar: string, pattern: string): boolean {
 }
 
 function matchPattern(inputLine: string, pattern: string): boolean {
-  let patternPos = 0;
+  const startOfLine = pattern.startsWith('^');
+  let patternPos = startOfLine ? 1 : 0;
   let match = false;
-  let startOfLine = false;
   for (const inputChar of inputLine) {
     let patternToMatch = pattern[patternPos] ?? '';
-    if (patternToMatch === '^') {
-      startOfLine = true;
-      continue;
-    }
-    else if (patternToMatch === '\\') {
+    if (patternToMatch === '\\') {
       patternToMatch = pattern.substring(patternPos, patternPos + 2);
     }
     else if (patternToMatch === '[') {
