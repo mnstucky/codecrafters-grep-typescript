@@ -30,9 +30,10 @@ function matchAtPosition(inputChar: string, pattern: string): boolean {
 
 function matchPattern(inputLine: string, pattern: string): boolean {
   const startOfLine = pattern.startsWith('^');
+  const endOfLine = pattern.endsWith('$');
   let patternPos = startOfLine ? 1 : 0;
   let match = false;
-  for (const inputChar of inputLine) {
+  for (let inputPos = 0; inputPos < inputLine.length; inputPos++) {
     let patternToMatch = pattern[patternPos] ?? '';
     if (patternToMatch === '\\') {
       patternToMatch = pattern.substring(patternPos, patternPos + 2);
@@ -41,8 +42,11 @@ function matchPattern(inputLine: string, pattern: string): boolean {
       const endOfGroup = pattern.substring(patternPos).indexOf(']');
       patternToMatch = pattern.substring(patternPos, endOfGroup + 1);
     }
-    match = matchAtPosition(inputChar, patternToMatch);
+    match = matchAtPosition(inputLine[inputPos], patternToMatch);
     if (startOfLine && !match) {
+      return false;
+    }
+    if (endOfLine && !match && inputPos === inputLine.length - 1) {
       return false;
     }
     if (match) {
