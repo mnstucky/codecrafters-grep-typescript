@@ -1,8 +1,6 @@
 const args = process.argv;
 const pattern = args[3];
 
-const result = matchPattern('sally has 1 orange', '\\d apple');
-
 const inputLine: string = await Bun.stdin.text();
 
 function matchAtPosition(inputChar: string, pattern: string): boolean {
@@ -31,7 +29,7 @@ function matchAtPosition(inputChar: string, pattern: string): boolean {
 
 function matchPattern(inputLine: string, pattern: string): boolean {
   let patternPos = 0;
-  let result = false;
+  let match = false;
   for (const inputChar of inputLine) {
     let patternToMatch = pattern[patternPos] ?? '';
     if (pattern[patternPos] === '\\') {
@@ -41,12 +39,15 @@ function matchPattern(inputLine: string, pattern: string): boolean {
       const endOfGroup = pattern.substring(patternPos).indexOf(']');
       patternToMatch = pattern.substring(patternPos, endOfGroup + 1);
     }
-    result = matchAtPosition(inputChar, patternToMatch);
-    if (result) {
+    match = matchAtPosition(inputChar, patternToMatch);
+    if (match) {
       patternPos += patternToMatch.length;
     }
   }
-  return result;
+  if (patternPos < pattern.length - 1) {
+    return false;
+  }
+  return match;
 }
 
 if (args[2] !== "-E") {
