@@ -1,7 +1,7 @@
 const args = process.argv;
 const pattern = args[3];
 
-const testResult = matchPattern('google', 'g.+gle');
+const testResult = matchPattern('gol', 'g.+gol');
 const inputLine: string = await Bun.stdin.text();
 
 function matchAtPosition(inputChar: string, pattern: string): boolean {
@@ -71,7 +71,8 @@ function matchPattern(inputLine: string, pattern: string): boolean {
     if (matchAtPos && !oneOrMore && !zeroOrMore) {
       patternPos += patternToMatch.length;
     }
-    if (oneOrMore && patternPos < pattern.length - extraPatternCharacters) {
+    if (oneOrMore && patternPos < pattern.length - extraPatternCharacters
+      && inputPos === inputLine.length - 1) {
       patternPos += 2;
       const patternAfterOneOrMore = getPatternToMatch(pattern, patternPos);
       while (inputPos > 0) {
