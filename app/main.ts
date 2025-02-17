@@ -71,6 +71,17 @@ function matchPattern(inputLine: string, pattern: string): boolean {
     if (matchAtPos && !oneOrMore && !zeroOrMore) {
       patternPos += patternToMatch.length;
     }
+    if (oneOrMore && patternPos < pattern.length - extraPatternCharacters) {
+      patternPos += 2;
+      const patternAfterOneOrMore = getPatternToMatch(pattern, patternPos);
+      while (inputPos > 0) {
+        inputPos -= 1;
+        const matchAtPos = matchAtPosition(inputLine[inputPos], patternAfterOneOrMore);
+        if (matchAtPos) {
+          break;
+        }
+      }
+    }
   }
   if (patternPos < pattern.length - extraPatternCharacters) {
     return false;
