@@ -31,6 +31,9 @@ function getPatternToMatch(pattern: string, patternPos: number) {
   } else if (patternToMatch === '[') {
     const endOfGroup = pattern.substring(patternPos).indexOf(']');
     patternToMatch = pattern.substring(patternPos, endOfGroup + 1);
+  } else if (patternToMatch === '(') {
+    const endOfGroup = pattern.substring(patternPos).indexOf(')');
+    patternToMatch = pattern.substring(patternPos, endOfGroup + 1);
   }
   return patternToMatch;
 }
@@ -47,37 +50,69 @@ function getXOrMore(
   return '';
 }
 
-function matchPattern(inputLine: string, pattern: string): boolean {
+function getStartingPatternPos(pattern: string) {
   const startOfLine = pattern.startsWith('^');
+  return startOfLine ? 1 : 0;
+}
+
+function getStartingExtraPatternCharacters(pattern: string) {
   const endOfLine = pattern.endsWith('$');
-  let extraPatternCharacters = endOfLine ? 1 : 0;
+  return endOfLine ? 1 : 0;
+}
+
+function matchProblemAtStartOfLine(pattern: string, matchAtPos: boolean) {
+  const startOfLine = pattern.startsWith('^');
+  if (startOfLine && !matchAtPos) {
+    return true;
+  }
+  return false;
+}
+
+function matchProblemAtEndOfLine(
+  pattern: string,
+  matchAtPos: boolean,
+  inputPos: number,
+  inputLine: string
+) {
+  const endOfLine = pattern.endsWith('$');
+  if (endOfLine && !matchAtPos && inputPos === inputLine.length - 1) {
+    return false;
+  }
+}
+
+function matchPattern(inputLine: string, pattern: string): boolean {
   let oneOrMore = '';
   let inputPosAtStartOfOneOrMore = -1;
-  let patternPos = startOfLine ? 1 : 0;
+  let patternPos = getStartingPatternPos(pattern);
+  let extraPatternCharacters = getStartingExtraPatternCharacters(pattern);
   let matchAtPos = false;
   for (let inputPos = 0; inputPos < inputLine.length; inputPos++) {
     const patternToMatch = getPatternToMatch(pattern, patternPos);
     const zeroOrMore = getXOrMore(pattern, patternPos, patternToMatch, '?');
     matchAtPos = matchAtPosition(inputLine[inputPos], patternToMatch);
+    // If we've reached the end of a + or ? operator, move to the next part of the pattern
     if (!matchAtPos && (oneOrMore || zeroOrMore)) {
       inputPos -= 1;
       patternPos += 2;
       extraPatternCharacters += 1;
     }
-    if (startOfLine && !matchAtPos) {
+    if (
+      matchProblemAtStartOfLine(pattern, matchAtPos) ||
+      matchProblemAtEndOfLine(pattern, matchAtPos, inputPos, inputLine)
+    ) {
       return false;
     }
-    if (endOfLine && !matchAtPos && inputPos === inputLine.length - 1) {
-      return false;
-    }
+    // Track the start of a + pattern
     const previousOneOrMore = oneOrMore;
     oneOrMore = getXOrMore(pattern, patternPos, patternToMatch, '+');
     if (!previousOneOrMore && oneOrMore) {
       inputPosAtStartOfOneOrMore = inputPos;
     }
+    // Move forward in the pattern to the next character
     if (matchAtPos && !oneOrMore && !zeroOrMore) {
       patternPos += patternToMatch.length;
     }
+    // Backtrack if at the end of a + pattern
     if (
       oneOrMore &&
       patternPos < pattern.length - extraPatternCharacters &&
