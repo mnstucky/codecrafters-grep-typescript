@@ -1,7 +1,6 @@
 const args = process.argv;
 const pattern = args[3];
 
-const testResult = matchPattern('gol', 'g.+gol');
 const inputLine: string = await Bun.stdin.text();
 
 function matchAtPosition(inputChar: string, pattern: string): boolean {
@@ -30,9 +29,6 @@ function getPatternToMatch(pattern: string, patternPos: number) {
     patternToMatch = pattern.substring(patternPos, patternPos + 2);
   } else if (patternToMatch === '[') {
     const endOfGroup = pattern.substring(patternPos).indexOf(']');
-    patternToMatch = pattern.substring(patternPos, endOfGroup + 1);
-  } else if (patternToMatch === '(') {
-    const endOfGroup = pattern.substring(patternPos).indexOf(')');
     patternToMatch = pattern.substring(patternPos, endOfGroup + 1);
   }
   return patternToMatch;
@@ -81,6 +77,21 @@ function matchProblemAtEndOfLine(
 }
 
 function matchPattern(inputLine: string, pattern: string): boolean {
+  if (pattern.startsWith('(')) {
+    const pattern1 = pattern.substring(1, pattern.indexOf('|'));
+    const pattern2 = pattern.substring(
+      pattern.indexOf('|') + 1,
+      pattern.indexOf(')')
+    );
+    return (
+      matchSubPattern(inputLine, pattern1) ||
+      matchSubPattern(inputLine, pattern2)
+    );
+  }
+  return matchSubPattern(inputLine, pattern);
+}
+
+function matchSubPattern(inputLine: string, pattern: string): boolean {
   let oneOrMore = '';
   let inputPosAtStartOfOneOrMore = -1;
   let patternPos = getStartingPatternPos(pattern);
