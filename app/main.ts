@@ -77,15 +77,17 @@ function matchProblemAtEndOfLine(
 }
 
 function matchPattern(inputLine: string, pattern: string): boolean {
-  if (pattern.startsWith('(')) {
-    const pattern1 = pattern.substring(1, pattern.indexOf('|'));
-    const pattern2 = pattern.substring(
-      pattern.indexOf('|') + 1,
-      pattern.indexOf(')')
-    );
+  if (pattern.includes('|')) {
+    const pattern1 =
+      pattern.slice(0, pattern.indexOf('(')) +
+      pattern.slice(pattern.indexOf('(') + 1, pattern.indexOf('|')) +
+      pattern.slice(pattern.indexOf(')') + 1);
+    const pattern2 =
+      pattern.slice(0, pattern.indexOf('(')) +
+      pattern.slice(pattern.indexOf('|') + 1, pattern.indexOf(')')) +
+      pattern.slice(pattern.indexOf(')') + 1);
     return (
-      matchSubPattern(inputLine, pattern1) ||
-      matchSubPattern(inputLine, pattern2)
+      matchPattern(inputLine, pattern1) || matchPattern(inputLine, pattern2)
     );
   }
   return matchSubPattern(inputLine, pattern);
